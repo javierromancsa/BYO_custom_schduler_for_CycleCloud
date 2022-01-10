@@ -1,0 +1,89 @@
+{
+  "boot_timeout": 1800,
+  "cluster_name": "customjge",
+  "default_resources": [
+    {
+      "select": {},
+      "name": "slots",
+      "value": "node.vcpu_count"
+    },
+    {
+      "select": {},
+      "name": "slot_type",
+      "value": "node.nodearray"
+    },
+    {
+      "select": {},
+      "name": "nodearray",
+      "value": "node.nodearray"
+    },
+    {
+      "select": {},
+      "name": "m_mem_free",
+      "value": "node.resources.memgb",
+      "subtract": "1g"
+    },
+    {
+      "select": {},
+      "name": "mfree",
+      "value": "node.resources.m_mem_free"
+    },
+    {
+      "select": {},
+      "name": "exclusive",
+      "value": "true"
+    }
+  ],
+  "idle_timeout": 300,
+  "lock_file": "/opt/cycle/gridengine/scalelib.lock",
+  "password": "a-6Zl6QEg5z5i1",
+  "url": "https://10.5.1.68:9443",
+  "username": "cyclecloud_access",
+  "gridengine": {
+    "pes": {
+      "make": {
+        "requires_placement_groups": false
+      }
+    },
+    "hostgroups": {
+      "@cyclempi": {
+        "constraints": {
+          "node.colocated": true
+        }
+      },
+      "@cyclehtc": {
+        "constraints": {
+          "node.colocated": false
+        }
+      }
+    },
+    "default_hostgroups": [
+      {
+        "select": {
+          "node.colocated": true
+        },
+        "hostgroups": [
+          "@cyclempi"
+        ]
+      },
+      {
+        "select": {
+          "node.colocated": false
+        },
+        "hostgroups": [
+          "@cyclehtc"
+        ]
+      }
+    ],
+    "relevant_complexes": [
+      "slots",
+      "slot_type",
+      "nodearray",
+      "m_mem_free",
+      "exclusive"
+    ]
+  },
+  "logging": {
+    "config_file": "/opt/cycle/gridengine/logging.conf"
+  }
+}
