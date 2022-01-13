@@ -1,7 +1,7 @@
 Create OGE queues and hostgroups from nodearray:
 Add queues to SGE that are associated to nodearrays defined in CC 
 
-1.  CREATE NEW HOSTGROUPS NAMED NP, D8_v3, & D48_v3:
+1.  CREATE NEW HOSTGROUPS NAMED GPUs D4v3 D48v3:
 
 sudo -i
 for h in GPUs D4v3 D48v3; do
