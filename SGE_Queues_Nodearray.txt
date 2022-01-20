@@ -1,10 +1,10 @@
 Create OGE queues and hostgroups from nodearray:
 Add queues to SGE that are associated to nodearrays defined in CC 
 
-1.  CREATE NEW HOSTGROUPS NAMED GPUs D4v3 D48v3:
+1.  CREATE NEW HOSTGROUPS NAMED gpus d4v3 d48v3:
 
 sudo -i
-for h in GPUs D4v3 D48v3; do
+for h in gpus d4v3 d48v3; do
   qconf -shgrp @allhosts > $SGE_ROOT/conf/${h}
   sed -i "s/allhosts/${h}/g" $SGE_ROOT/conf/${h}
   qconf -Ahgrp $SGE_ROOT/conf/${h}
@@ -27,29 +27,29 @@ sudo vim /opt/cycle/gridengine/autoscale.json
                 "node.nodearray": "htc"
             }
         },
-        "@GPUs": {
+        "@gpus": {
             "constraints": {
                 "node.colocated": false,
-	            "node.nodearray": "GPUs"
+	            "node.nodearray": "gpus"
             }
         },
-        "@D4v3": {
+        "@d4v3": {
             "constraints": {
                 "node.colocated": false,
-	            "node.nodearray": "D4v3"
+	            "node.nodearray": "d4v3"
             }
         },
-        "@D48v3": {
+        "@d48v3": {
             "constraints": {
                 "node.colocated": false,
-	            "node.nodearray": "D48v3"
+	            "node.nodearray": "d48v3"
             }
         },
 
 3.  CREATE QUEUES FOR EACH HOSTGROUP
 
 sudo -i 
-for q in GPUs D4v3 D48v3 ; do
+for q in gpus d4v3 d48v3 ; do
   qconf -sq all.q > $SGE_ROOT/conf/${q}.q
   sed -i "s/all.q/${q}.q/g" $SGE_ROOT/conf/${q}.q
   sed -i "s/@cyclehtc @cyclempi/@${q}/g" $SGE_ROOT/conf/${q}.q
