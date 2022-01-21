@@ -36,7 +36,7 @@
   ],
   "idle_timeout": 300,
   "lock_file": "/opt/cycle/gridengine/scalelib.lock",
-  "password": "a-6Zl6QEg5z5i1",
+  "password": "",
   "url": "https://10.5.1.68:9443",
   "username": "cyclecloud_access",
   "gridengine": {
@@ -55,7 +55,25 @@
         "constraints": {
           "node.colocated": false
         }
-      }
+      },
+        "@gpus": {
+            "constraints": {
+                "node.colocated": false,
+	            "node.nodearray": "gpus"
+            }
+        },
+        "@d4v3": {
+            "constraints": {
+                "node.colocated": false,
+	            "node.nodearray": "d4v3"
+            }
+        },
+        "@d48v3": {
+            "constraints": {
+                "node.colocated": false,
+	            "node.nodearray": "d48v3"
+            }
+        }      
     },
     "default_hostgroups": [
       {
