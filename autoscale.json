@@ -1,6 +1,6 @@
 {
   "boot_timeout": 1800,
-  "cluster_name": "customjge",
+  "cluster_name": "javier",
   "default_resources": [
     {
       "select": {},
