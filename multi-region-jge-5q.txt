@@ -22,10 +22,10 @@ Autoscale = $Autoscale
 
     Credentials = $Credentials    
 
-    SubnetId = $SubnetId
+    SubnetId = etl-rg/etl-vnet/az-cluster01
 
-    Region = $Region
-
+    Region = eastus2
+    
     KeyPairLocation = ~/.ssh/cyclecloud.pem
 
     
@@ -48,7 +48,7 @@ Autoscale = $Autoscale
 
 	#multiregion requirement
 	cyclecloud.hosts.standalone_dns.alt_suffix = private.mydomain.com
-	cyclecloud.hosts.standalone_dns.subnets = 10.5.2.0/25,10.5.10.0/24,10.5.1.0/26,10.5.4.0/22,10.5.0.0/24,10.5.3.0/24,10.5.1.128/25,10.5.12.0/25,10.5.1.72/29,10.5.1.64/29,10.5.11.0/24,10.64.0.0/24
+	cyclecloud.hosts.standalone_dns.subnets = 10.5.11.0/24,10.64.0.0/24
 
         # For fast spin-up after Deallocate, force an immediate re-converge on boot
 
@@ -218,7 +218,7 @@ Autoscale = $Autoscale
 
         type = nfs
 
-    [[nodearray GPUs]]
+    [[nodearray gpus]]
 
     MachineType = $Q1MachineType
 
@@ -253,7 +253,7 @@ Autoscale = $Autoscale
         AssociatePublicIpAddress = $ExecuteNodesPublic
 
 
-    [[nodearray D4v3]]
+    [[nodearray d4v3]]
 
     MachineType = $Q2MachineType
 
@@ -285,7 +285,7 @@ Autoscale = $Autoscale
 
         AssociatePublicIpAddress = $ExecuteNodesPublic
 
-    [[nodearray D48v3]]
+    [[nodearray d48v3]]
 
     MachineType = $Q3MachineType
 
