@@ -54,5 +54,6 @@ for q in gpus d4v3 d48v3 ; do
   sed -i "s/all.q/${q}.q/g" $SGE_ROOT/conf/${q}.q
   sed -i "s/@cyclehtc @cyclempi/@${q}/g" $SGE_ROOT/conf/${q}.q
   sed -i 's/^pe_list.*/pe_list make,smpslots/g' $SGE_ROOT/conf/${q}.q
+  sed -i "s/^seq_no.*/seq_no 10000,[@${q}=100],[@cyclehtc=200]/g" $SGE_ROOT/conf/${q}.q
   qconf -Aq $SGE_ROOT/conf/${q}.q
 done
