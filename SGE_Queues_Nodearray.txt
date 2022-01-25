@@ -10,23 +10,22 @@ for h in gpus d4v3 d48v3; do
   qconf -Ahgrp $SGE_ROOT/conf/${h}
 done
 
-2.  ADD NEW HOSTGROUPS TO AUTOSCALE.JSON 
+2.  Edit gridengine section HOSTGROUPs in /opt/cycle/gridengine/autoscale.json
 
-sudo vim /opt/cycle/gridengine/autoscale.json
 
+
+  "gridengine": {
+    "pes": {
+      "make": {
+        "requires_placement_groups": false
+      }
+    },
     "hostgroups": {
-        "@cyclempi": {
-            "constraints": {
-                "node.colocated": true,
-                "node.nodearray": "hpc"
-            }
-        },
-        "@cyclehtc": {
-            "constraints": {
-                "node.colocated": false,
-                "node.nodearray": "htc"
-            }
-        },
+      "@cyclempi": {
+        "constraints": {
+          "node.colocated": true
+        }
+      },
         "@gpus": {
             "constraints": {
                 "node.colocated": false,
@@ -44,16 +43,36 @@ sudo vim /opt/cycle/gridengine/autoscale.json
                 "node.colocated": false,
 	            "node.nodearray": "d48v3"
             }
+        }
+    },
+    "default_hostgroups": [
+      {
+        "select": {
+          "node.colocated": true
         },
-
+        "hostgroups": [
+          "@cyclempi"
+        ]
+      }
+    ],
+    "relevant_complexes": [
+      "slots",
+      "slot_type",
+      "nodearray",
+      "m_mem_free",
+      "exclusive"
+    ]
+  },
 3.  CREATE QUEUES FOR EACH HOSTGROUP
 
 sudo -i 
 for q in gpus d4v3 d48v3 ; do
   qconf -sq all.q > $SGE_ROOT/conf/${q}.q
   sed -i "s/all.q/${q}.q/g" $SGE_ROOT/conf/${q}.q
-  sed -i "s/@cyclehtc @cyclempi/@${q}/g" $SGE_ROOT/conf/${q}.q
+  sed -i "s/@cyclehtc @cyclempi/@${q} @cyclempi/g" $SGE_ROOT/conf/${q}.q
   sed -i 's/^pe_list.*/pe_list make,smpslots/g' $SGE_ROOT/conf/${q}.q
-  sed -i "s/^seq_no.*/seq_no 10000,[@${q}=100],[@cyclehtc=200]/g" $SGE_ROOT/conf/${q}.q
+  sed -i "s/^seq_no.*/seq_no 10000,[@${q}=100]/g" $SGE_ROOT/conf/${q}.q
   qconf -Aq $SGE_ROOT/conf/${q}.q
 done
+
+4.Edit all.q to remove the use of @cyclehtc using qconf -mq all.q
