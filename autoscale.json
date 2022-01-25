@@ -51,11 +51,6 @@
           "node.colocated": true
         }
       },
-      "@cyclehtc": {
-        "constraints": {
-          "node.colocated": false
-        }
-      },
         "@gpus": {
             "constraints": {
                 "node.colocated": false,
@@ -73,7 +68,7 @@
                 "node.colocated": false,
 	            "node.nodearray": "d48v3"
             }
-        }      
+        }
     },
     "default_hostgroups": [
       {
@@ -82,14 +77,6 @@
         },
         "hostgroups": [
           "@cyclempi"
-        ]
-      },
-      {
-        "select": {
-          "node.colocated": false
-        },
-        "hostgroups": [
-          "@cyclehtc"
         ]
       }
     ],
