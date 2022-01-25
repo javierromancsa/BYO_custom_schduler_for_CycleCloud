@@ -75,4 +75,4 @@ for q in gpus d4v3 d48v3 ; do
   qconf -Aq $SGE_ROOT/conf/${q}.q
 done
 
-4.Edit all.q to remove the use of @cyclehtc using qconf -mq all.q
+4.Edit all.q to remove the use of @cyclehtc using qconf -mq all.q Also remove @cyclehtc hostgroup from SGE.
