@@ -1,68 +1,87 @@
-# cyclecloud-gridengine-java
-Open GridEngine compiled with support for Java DRMAA API
+# Bring your own custom scheduler for CycleCloud
+In this example we are going to use a version of the OpenGridEngine scheduler compiled with support for Java DRMAA API. This OpenGridEngine version is the baseline version use for CycleCloud SGE scheduler sge-2011.11-64.tgz and sge-2011.11-common.tgz [latest](https://github.com/Azure/cyclecloud-gridengine/releases/latest)
 
-CycleCloud GridEngine Project
-This project adds Java support to the Open Grid Engine supplied with Azure CycleCloud
-
-## Prerequisites
-This example will use the sge-2011.11 version specifically compiled with support for Java.  
-1. Use the Java compiled files OGE files named as follows (NOTE:  do not change the file names):  
+## Prerequisites  
+1. [Deploy CycleCloud using Market Place image](https://docs.microsoft.com/en-us/azure/cyclecloud/qs-install-marketplace?view=cyclecloud-8)
+2. Use the Java compiled files OGE files named as follows (NOTE: do not change the file names):  		    
+		    [sge-2011.11j-64.tgz](https://github.com/javierromancsa/BYO_custom_schduler_for_CycleCloud/blob/master/sge-2011.11j-64.tgz)  
+		    [sge-2011.11j-common.tgz](https://github.com/javierromancsa/BYO_custom_schduler_for_CycleCloud/blob/master/sge-2011.11j-common.tgz)
 		    
-		    sge-2011.11j-64.tgz  
-		    sge-2011.11j-common.tgz
-		    
-2. The cyclecloud cli must be configured. Documentation is available here:  
+3. The cyclecloud cli must be configured. Documentation is available here:  
   [https://docs.microsoft.com/en-us/azure/cyclecloud/install-cyclecloud-cli](https://docs.microsoft.com/en-us/azure/cyclecloud/install-cyclecloud-cli)
 
 
-## Copy the binaries into the cloud locker
+### Copy the binaries into the cloud locker
 
-Using the CLI, determine the url of the cloud locker for your installation, then use the pogo put command (installed with cyclecloud cli) to upload the installers to the locker.
+To use another version upload the binaries to the storage account that CycleCloud uses.
+
+```bash
+
+$ azcopy cp sge-2011.11j-64.tgz https://<storage-account-name>.blob.core.windows.net/cyclecloud/gridengine/blobs/
+$ azcopy cp sge-2011.11j-common.tgz https://<storage-account-name>.blob.core.windows.net/cyclecloud/gridengine/blobs/
 ```
-$ cyclecloud locker list
-azure-storage (az://myprojectwestus2/cyclecloud)
-$ pogo put sge-2011.11j-64.tgz az://myprojectwestus2/cyclecloud/cache/projects/gridengine/blobs/
-Copied: az://myprojectwestus2/cyclecloud/cache/projects/gridengine/blobs/sge-2011.11j-64.tgz 
-Processed:   1 | Transferred:   1 | Deleted:   0 | Failures:   0 | Average rate: 5.43 MBps  
-$ pogo put sge-2011.11j-common.tgz az://myprojectwestus2/cyclecloud/cache/projects/gridengine/blobs/
-Copied: az://myprojectwestus2/cyclecloud/cache/projects/gridengine/blobs/sge-2011.11j-common.tgz
-Processed:   1 | Transferred:   1 | Deleted:   0 | Failures:   0 | Average rate: 6.04 MBps  
+### Modifying configs to the cluster template
+
+Make a local copy of the gridengine template and modify it to use your binaries in the the default.
+
+```bash
+wget https://raw.githubusercontent.com/Azure/cyclecloud-gridengine/master/templates/gridengine.txt
 ```
 
-## Add OGE-Java configs to the cluster template
-Add the following lines to your gridengine.txt template and modify it to use the OGE-Java installers instead of the default.
-NOTE: The details in the configuration, particularly version, should match the installer file name.
+In the _gridengine.txt_ file, locate the first occurrence of `[[[configuration]]]` and
+insert text such that it matches the snippet below.  This file is not sensitive to 
+indentation.
+
+> NOTE:
+> The details in the configuration, particularly version, should match the installer file name.
+
+```ini
+[[[configuration gridengine]]]
+    make = sge
+    version = 2011.11j
+    root = /sched/sge/sge-2011-11j
+    cell = "default"
+    sge_qmaster_port = "537"
+    sge_execd_port = "538"
+    sge_cluster_name = "grid1"
+    gid_range = "20000-20100"
+    qmaster_spool_dir = "/sched/sge/sge-2011-11j/default/spool/qmaster" 
+    execd_spool_dir = "/sched/sge/sge-2011-11j/default/spool"
+    spooling_method = "berkeleydb"
+    shadow_host = ""
+    admin_mail = ""
+    idle_timeout = 300
+
+    managed_fs = true
+    shared.bin = true
+
+    ignore_fqdn = true
+    group.name = "sgeadmin"
+    group.gid = 536
+    user.name = "sgeadmin"
+    user.uid = 536
+    user.gid = 536
+    user.description = "SGE admin user"
+    user.home = "/shared/home/sgeadmin"
+    user.shell = "/bin/bash"
+
 ```
-[[[configuration]]]  
-    gridengine.make = sge  
-    gridengine.version = 2011.11j  
-    gridengine.root = /sched/sge/sge-2011.11j
-```  
-These configs will override the default gridengine version and installation location, as the cluster starts. It is not safe to move off of the /sched as it's a specifically shared nfs location in the cluster.
 
+These configs will override the default gridengine version and installation location, as the cluster starts.  
+It is not safe to move off of the `/sched` as it's a specifically shared nfs location in the cluster.
 
-## Import the cluster template file
-Using the cyclecloud cli, import a cluster template from the modified gridengine.txt cluster template file. 
+### Import the cluster template file
 
-	cyclecloud import_cluster OGE-Java -c 'grid engine' -f gridengine.txt -t --force
+Using the cyclecloud cli, import a cluster template from the new cluster template file.
 
-Similar to this tutorial in the documentation, new OGE-Java cluster type is now available in the Create Cluster menu in the UI.
+```bash
+cyclecloud import_cluster OGE -c 'grid engine' -f gridengine.txt -t
+```
+
+Similar to this [tutorial](https://docs.microsoft.com/en-us/azure/cyclecloud/tutorials/modify-cluster-template) in the documentation, new OGE cluster type is now available in the *Create Cluster* menu in the UI.
+
 Configure and create the cluster in the UI, save it, and start it.
 
 ## Verify GridEngine version
-As an example, start a cluster in CycleCloud that has been configured and is named "test-uge" or whatever you want to name it. When the master node reaches the Started state (green), log into the node with the cyclecloud connect command.  
-		`cyclecloud connect master -c test-uge`
-
-```Last login: Tue Jan 29 20:37:14 2019 
-
- __        __  |    ___       __  |    __         __|
-(___ (__| (___ |_, (__/_     (___ |_, (__) (__(_ (__|
-        |
-
-Cluster: test-uge
-Version: 7.7.5
-
-Then check the grid engine version with qstat
-qstat -h
-OGS/GE 2011.11p1
-usage: qstat [options]```
+As an example, start a cluster in CycleCloud that has been configured and is named "test-OGE" or whatever you want to name it. When the master node reaches the Started state (green), log into the node with the cyclecloud connect command.  
+		`cyclecloud connect master -c test-OGE`
