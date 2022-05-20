@@ -45,13 +45,40 @@ done
             }
         }
     },
-    "default_hostgroups": [
+     "default_hostgroups": [
       {
         "select": {
           "node.colocated": true
         },
         "hostgroups": [
           "@cyclempi"
+        ]
+      },
+      {
+        "select": {
+          "node.nodearray": "gpus",
+          "node.colocated": false
+        },
+        "hostgroups": [
+          "@gpus"
+        ]
+      },
+      {
+        "select": {
+          "node.nodearray": "d4v3",
+          "node.colocated": false
+        },
+        "hostgroups": [
+          "@d4v3"
+        ]
+      },
+      {
+        "select": {
+          "node.nodearray": "d48v3",
+          "node.colocated": false
+        },
+        "hostgroups": [
+          "@d48v3"
         ]
       }
     ],
